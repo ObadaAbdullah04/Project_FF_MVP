@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1374beda38ab64ea66d477e6a1235c, type: 3}
+  m_Name: LocalizationData_SO
+  m_EditorClassIdentifier: 
+  entries:
+  - key: shop_title
+    value: "\u0627\u0644\u0645\u062A\u062C\u0631"
+  - key: PlayGame
+    value: "\u062C\u0631\u0628"
+  - key: parent_gate_wrong_pin
+    value: "\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D"
+  - key: hud_score
+    value: "\u0627\u0644\u0646\u0642\u0627\u0637"
+  - key: hud_time
+    value: "\u0627\u0644\u0648\u0642\u062A"
+  - key: hud_pause
+    value: "\u0627\u0633\u062A\u0626\u0646\u0627\u0641"
+  - key: hud_game_over
+    value: "\u0627\u0646\u062A\u0647\u062A \u0627\u0644\u0644\u0639\u0628\u0629"
+  - key: hud_coins
+    value: "\u0627\u0644\u0639\u0645\u0644\u0627\u062A"
+  - key: hud_back_to_city
+    value: "\u0627\u0644\u0639\u0648\u062F\u0629 \u0644\u0644\u0645\u062F\u064A\u0646\u0629"

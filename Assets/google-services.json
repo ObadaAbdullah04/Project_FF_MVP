@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "271635508945",
+    "project_id": "ff-mvp-1f94c",
+    "storage_bucket": "ff-mvp-1f94c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271635508945:android:6bab9f706434b1b5f6dff0",
+        "android_client_info": {
+          "package_name": "com.defaultcompany.project_ff_mvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZGUXoxJwqrspUT5QtlQfVo9ZG1QOemik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
