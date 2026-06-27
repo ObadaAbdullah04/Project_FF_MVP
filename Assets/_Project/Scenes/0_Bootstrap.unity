@@ -209,8 +209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _localizationData: {fileID: 11400000, guid: 0d0c228c0e4173b40a1bb48cfaaa4e74, type: 2}
-  _coreSceneName: 1_Core
-  _hubSceneName: 2_HubWorld
+  _sceneConfig: {fileID: 11400000, guid: 1fdc41b26b8168444b98c6cc50f13585, type: 2}
 --- !u!4 &1624275913
 Transform:
   m_ObjectHideFlags: 0

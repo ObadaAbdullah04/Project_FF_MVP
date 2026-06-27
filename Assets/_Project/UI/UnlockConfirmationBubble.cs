@@ -2,13 +2,12 @@ namespace Project.UI
 {
     using System;
     using DG.Tweening;
-    using Project.Data;
-    using Project.Hub;
+    using Project.Architecture;
     using RTLTMPro;
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class UnlockConfirmationBubble : MonoBehaviour
+    public class UnlockConfirmationBubble : TweenableMonoBehaviour
     {
         [Header("UI References")]
         [SerializeField] private Image _coinIcon;
@@ -18,24 +17,22 @@ namespace Project.UI
         [SerializeField] private Button _cancelButton;
         [SerializeField] private RectTransform _panel;
 
-        private ChunkController _chunk;
-        private Action<ChunkController> _onConfirm;
+        private Action _onConfirm;
         private Action _onCancel;
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            transform.DOKill();
             if (_panel != null)
                 _panel.DOKill();
+            base.OnDestroy();
         }
 
-        public void Setup(ChunkController chunk, InventoryData inventory, Action<ChunkController> onConfirm, Action onCancel)
+        public void Setup(int cost, Action onConfirm, Action onCancel)
         {
-            _chunk = chunk;
             _onConfirm = onConfirm;
             _onCancel = onCancel;
 
-            _costText.text = chunk.UnlockCost.ToString();
+            _costText.text = cost.ToString();
 
             _confirmButton.onClick.RemoveListener(OnConfirmClicked);
             _cancelButton.onClick.RemoveListener(OnCancelClicked);
@@ -77,7 +74,7 @@ namespace Project.UI
 
         private void OnConfirmClicked()
         {
-            _onConfirm?.Invoke(_chunk);
+            _onConfirm?.Invoke();
         }
 
         private void OnCancelClicked()

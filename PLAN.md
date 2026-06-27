@@ -16,8 +16,12 @@ A free-to-play educational mobile game for kids aged **3–8**, blending 2D mini
 
 ## 2. Core Game Loop
 
-```
-Play & Earn → Build & Unlock → Expand & Improve
+```mermaid
+flowchart LR
+    Play[Play Mini-Game] --> Earn[Earn Coins]
+    Earn --> Build[Unlock Chunk]
+    Build --> Expand[See Building + Character]
+    Expand --> Play
 ```
 
 - **Play:** 2D mini-games (endless, educational, story-driven) → earn coins.
@@ -37,10 +41,16 @@ Play & Earn → Build & Unlock → Expand & Improve
 ## 4. Experience Flow
 
 ### Child
-```
-Launch → Parent Gate (PIN) → Timer starts → Hub World (locked chunks)
-  → Play mini-game → Earn coins → Unlock chunk → See building + character
-  → Loop until timer expires
+```mermaid
+flowchart TD
+    Launch --> Gate[Parent Gate PIN]
+    Gate --> Timer[Daily Timer Starts]
+    Timer --> Hub[Hub World - Locked Chunks]
+    Hub --> Play[Play Mini-Game]
+    Play --> Earn[Earn Coins]
+    Earn --> Unlock[Unlock Chunk]
+    Unlock --> See[See Building + Character]
+    See --> Hub
 ```
 
 ### Parent
@@ -95,9 +105,31 @@ Launch → Parent Gate (PIN) → Timer starts → Hub World (locked chunks)
 ### Phase 3 — Mini-Game (Week 3)
 **Focus:** One complete playable game wired to the hub.
 
-- [ ] One playable mini-game — polished, fun, repeatable
-- [ ] Hub integration — play button → game → earn coins → return to hub
-- [ ] Reward screen — show coins earned, positive feedback
+- [x] One playable mini-game — polished, fun, repeatable
+- [x] Hub integration — play button → game → earn coins → return to hub
+- [x] Reward screen — show coins earned, positive feedback
+
+### Clean Up Phase (Completed)
+**Focus:** Code modularity, low coupling, and event-driven decoupling.
+
+- [x] Extract dedicated camera drag/reset and raycast input controllers
+- [x] Decouple UI confirmation bubble from physical chunks and inventory
+- [x] Build local persistent save system fallback
+- [x] Completely localize dashboard texts and coins HUD labels
+
+### Architecture Refactoring Phase (Completed)
+**Focus:** Systematic code audit, tech debt elimination, singleton decoupling.
+
+- [x] Create `TweenableMonoBehaviour` base class — eliminate duplicated DOKill across 3 components
+- [x] Extract `CameraUtility` — deduplicate camera auto-find pattern
+- [x] Fix `HubCameraController` double-initialization (Awake + Start redundancy)
+- [x] Split `ParentGateUI` — flow controller + `PinValidationView`
+- [x] Add `SceneLoader.LoadSceneSingle` — enable non-additive scene switches through abstraction
+- [x] Replace raw `SceneManager.LoadScene` in `HubWorldManager` with `SceneLoader`
+- [x] Fix ScriptableObject state bleed — `InventoryData.ResetData()` on game start
+- [x] Make `ParentDashboardUI` reactive — subscribe to progress events
+- [x] Create `ServiceLocator` — all 6 singletons register centrally, resolve via `Get<T>()`
+- [x] Remove orphan `GameManager`/`SceneLoader` GameObjects from HubWorld scene
 
 ### Phase 4 — Polish & Ship (Week 4)
 **Focus:** Character, safety, QA.
@@ -116,9 +148,11 @@ Launch → Parent Gate (PIN) → Timer starts → Hub World (locked chunks)
 | Phase | Status |
 |-------|--------|
 | Phase 1 — Foundation | ✅ Complete. Parent Gate fully integrated, scene load routing configured, RTL Arabic localization active, Firebase stubs active. |
-| Phase 2 — Hub World | ✅ Isometric chunk grid, tap-to-unlock with confirmation bubble, camera pan sequence, 3 category forced-variety validation, DOTween unlock animation, coins UI on top bar, scene-saving tool. |
-| Phase 3 — Mini-Game | ✅ Cosmic Hopper playable. Hub → game → earn → return loop works. Prefab references need assignment. |
-| Phase 4 — Polish & Ship | ❌ Character, reward screen, session timer all absent. |
+| Phase 2 — Hub World | ✅ Complete. Isometric chunk grid, tap-to-unlock with confirmation bubble, camera pan sequence, DOTween unlock animation, coins UI on top bar, scene-saving tool. (Category validation postponed to W4). |
+| Phase 3 — Mini-Game | ✅ Complete. Cosmic Hopper playable. Hub → game → earn → return loop works. |
+| Clean Up Phase | ✅ Complete. Decoupled and refactored core, camera, inputs, save fallback, and UI localizations. |
+| Architecture Refactoring | ✅ Complete. Code audit fixes, ServiceLocator, singleton mesh decoupling, scene cleanup. |
+| Phase 4 — Polish & Ship | ⏳ Next up. Character companion, session timer, QA, and Android build target. |
 
 ---
 

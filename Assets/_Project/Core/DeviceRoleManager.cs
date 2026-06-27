@@ -2,6 +2,7 @@ namespace Project.Core
 {
     using UnityEngine;
     using System;
+    using Project.Architecture;
 
     // Defines the possible operational states of the device.
     public enum DeviceRole
@@ -18,7 +19,7 @@ namespace Project.Core
     public class DeviceRoleManager : MonoBehaviour
     {
         // Singleton instance reference
-        public static DeviceRoleManager Instance { get; private set; }
+        public static DeviceRoleManager Instance => ServiceLocator.Get<DeviceRoleManager>();
 
         // PlayerPrefs storage keys
         private const string RoleKey = "DeviceRole";
@@ -30,16 +31,14 @@ namespace Project.Core
 
         private void Awake()
         {
-            // Enforce singleton pattern: ensure only one manager survives transitions between scenes
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
+            if (Instance != null)
             {
                 Destroy(gameObject);
+                return;
             }
+
+            DontDestroyOnLoad(gameObject);
+            ServiceLocator.Register<DeviceRoleManager>(this);
         }
 
         /// <summary>

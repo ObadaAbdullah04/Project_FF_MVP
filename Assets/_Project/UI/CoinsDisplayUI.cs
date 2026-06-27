@@ -35,7 +35,10 @@ namespace Project.UI
         {
             if (_coinsText != null)
             {
-                _coinsText.text = $"النقود: {coins}";
+                string label = Core.LocalizationManager.Instance != null 
+                    ? Core.LocalizationManager.Instance.GetText("hud_coins_display") 
+                    : "النقود";
+                _coinsText.text = $"{label}: {coins}";
             }
         }
     }

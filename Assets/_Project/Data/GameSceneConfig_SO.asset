@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8941a6c6cbaed6f47849fba2b245f30e, type: 3}
-  m_Name: InventoryData_SO
+  m_Script: {fileID: 11500000, guid: 1dc180bf5800b4940adf249e9d6b798d, type: 3}
+  m_Name: GameSceneConfig_SO
   m_EditorClassIdentifier: 
-  _softCurrency: 0
-  _unlockedBuildingIds: []
-  _unlockedChunkIds: []
+  _coreSceneName: 1_Core
+  _hubSceneName: 2_HubWorld
+  _parentGateSceneName: Parent Gate
+  _parentDashboardSceneName: ParentDashboard

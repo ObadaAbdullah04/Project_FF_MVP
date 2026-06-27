@@ -9,7 +9,7 @@ namespace Project.MiniGames
     public abstract class BaseMiniGameManager : MonoBehaviour
     {
         [SerializeField] protected InventoryData _inventoryData;
-        [SerializeField] protected string _hubSceneName = "2_HubWorld";
+        [SerializeField] protected GameSceneConfig _sceneConfig;
         [SerializeField] protected UniversalMiniGameHUD _hud;
 
         protected abstract void OnGameStart();
@@ -27,10 +27,16 @@ namespace Project.MiniGames
             if (_hud != null)
                 _hud.Cleanup();
 
+            if (_sceneConfig == null)
+            {
+                Debug.LogError("CompleteGame: _sceneConfig is not assigned — cannot determine hub scene");
+                return;
+            }
+
             if (_inventoryData == null)
             {
                 Debug.LogWarning("CompleteGame: _inventoryData is not assigned — coins not added");
-                SceneManager.LoadScene(_hubSceneName);
+                SceneManager.LoadScene(_sceneConfig.HubSceneName);
                 return;
             }
 
@@ -39,7 +45,7 @@ namespace Project.MiniGames
             if (GameManager.Instance != null)
                 GameManager.Instance.SaveGame();
 
-            SceneManager.LoadScene(_hubSceneName);
+            SceneManager.LoadScene(_sceneConfig.HubSceneName);
         }
     }
 }

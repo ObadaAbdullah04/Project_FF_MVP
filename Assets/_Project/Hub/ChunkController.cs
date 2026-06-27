@@ -1,11 +1,12 @@
 namespace Project.Hub
 {
     using DG.Tweening;
+    using Project.Architecture;
     using Project.Data;
     using UnityEngine;
 
     [SelectionBase]
-    public class ChunkController : MonoBehaviour
+    public class ChunkController : TweenableMonoBehaviour
     {
         [SerializeField] private string _chunkId;
         [SerializeField] private int _unlockCost;
@@ -15,27 +16,50 @@ namespace Project.Hub
         [SerializeField] private Transform _targetLandingPosition;
 
         private bool _isUnlocked;
+        private InventoryData _inventoryData;
 
         public string ChunkId => _chunkId;
         public int UnlockCost => _unlockCost;
         public bool IsUnlocked => _isUnlocked;
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            transform.DOKill();
+            if (_inventoryData != null)
+            {
+                _inventoryData.OnChunkUnlocked -= HandleGlobalChunkUnlocked;
+            }
+            base.OnDestroy();
         }
 
         public void Initialize(InventoryData inventory)
         {
-            if (inventory == null) return;
+            if (_inventoryData != null)
+            {
+                _inventoryData.OnChunkUnlocked -= HandleGlobalChunkUnlocked;
+            }
 
-            if (inventory.HasUnlockedChunk(_chunkId) || _isUnlockedByDefault)
+            _inventoryData = inventory;
+
+            if (_inventoryData != null)
+            {
+                _inventoryData.OnChunkUnlocked += HandleGlobalChunkUnlocked;
+            }
+
+            if (inventory != null && (inventory.HasUnlockedChunk(_chunkId) || _isUnlockedByDefault))
             {
                 SetUnlockedImmediate();
             }
             else
             {
                 SetLockedImmediate();
+            }
+        }
+
+        private void HandleGlobalChunkUnlocked(string chunkId)
+        {
+            if (chunkId == _chunkId)
+            {
+                PlayUnlockAnimation();
             }
         }
 

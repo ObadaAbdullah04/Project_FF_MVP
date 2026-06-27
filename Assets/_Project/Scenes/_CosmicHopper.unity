@@ -4996,7 +4996,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 6e3cb135528ac2a4b8eccea3c41300df, type: 2}
-  _hubSceneName: 2_HubWorld
+  _sceneConfig: {fileID: 11400000, guid: 1fdc41b26b8168444b98c6cc50f13585, type: 2}
   _hud: {fileID: 1393732610}
   _ruleConfig: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6, type: 2}
   _templateRoot: {fileID: 819451131}

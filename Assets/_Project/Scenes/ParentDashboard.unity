@@ -574,7 +574,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1300,14 +1300,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4089842b381c404f928c638c463db17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _titleText: {fileID: 0}
+  _sceneConfig: {fileID: 11400000, guid: 1fdc41b26b8168444b98c6cc50f13585, type: 2}
+  _titleText: {fileID: 803217581}
   _pinStatusText: {fileID: 1097687492}
   _backButton: {fileID: 1298610318}
   _inventoryData: {fileID: 11400000, guid: 6e3cb135528ac2a4b8eccea3c41300df, type: 2}
   _coinsText: {fileID: 90946186}
   _buildingsText: {fileID: 1438481461}
   _playModeButton: {fileID: 1951701592}
-  _parentDashboardSceneName: ParentDashboard
 --- !u!114 &1344593946
 MonoBehaviour:
   m_ObjectHideFlags: 0

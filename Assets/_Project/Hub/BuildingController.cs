@@ -1,18 +1,14 @@
 namespace Project.Hub
 {
     using DG.Tweening;
+    using Project.Architecture;
     using UnityEngine;
 
-    public class BuildingController : MonoBehaviour
+    public class BuildingController : TweenableMonoBehaviour
     {
         [SerializeField] private string _miniGameScene;
 
         public string MiniGameScene => _miniGameScene;
-
-        private void OnDestroy()
-        {
-            transform.DOKill();
-        }
 
         public void PlayUnlockAnimation(float delay = 0f)
         {

@@ -1,6 +1,7 @@
 namespace Project.Core
 {
     using System.Collections.Generic;
+    using Project.Architecture;
     using Project.Data;
     using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Project.Core
 
         private Dictionary<string, string> _localizedTextMap;
 
-        public static LocalizationManager Instance { get; private set; }
+        public static LocalizationManager Instance => ServiceLocator.Get<LocalizationManager>();
 
         private void Awake()
         {
@@ -20,16 +21,8 @@ namespace Project.Core
                 return;
             }
 
-            Instance = this;
             DontDestroyOnLoad(gameObject);
-        }
-
-        private void OnDestroy()
-        {
-            if (Instance == this)
-            {
-                Instance = null;
-            }
+            ServiceLocator.Register<LocalizationManager>(this);
         }
 
         public void Initialize(LocalizationData data)

@@ -7,12 +7,7 @@ namespace Project.Core
     {
         [Header("System Dependencies")]
         [SerializeField] private LocalizationData _localizationData;
-
-        [Header("Scene Configuration")]
-        [SerializeField] private string _coreSceneName = "1_Core";
-        [SerializeField] private string _hubSceneName = "2_HubWorld";
-        [SerializeField] private string _parentGateSceneName = "Parent Gate";
-        [SerializeField] private string _parentDashboardSceneName = "ParentDashboard";
+        [SerializeField] private GameSceneConfig _sceneConfig;
 
         private void Start()
         {
@@ -21,7 +16,13 @@ namespace Project.Core
 
         private void RunBootstrapSequence()
         {
-            SceneLoader.Instance.LoadSceneAdditively(_coreSceneName, () =>
+            if (_sceneConfig == null)
+            {
+                Debug.LogError("AppBootstrapper: GameSceneConfig dependency is missing!");
+                return;
+            }
+
+            SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.CoreSceneName, () =>
             {
                 if (LocalizationManager.Instance != null)
                 {
@@ -40,7 +41,7 @@ namespace Project.Core
         {
             if (DeviceRoleManager.Instance == null)
             {
-                SceneLoader.Instance.LoadSceneAdditively(_hubSceneName, null);
+                SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.HubSceneName, null);
                 return;
             }
 
@@ -48,14 +49,14 @@ namespace Project.Core
             switch (role)
             {
                 case DeviceRole.Parent:
-                    SceneLoader.Instance.LoadSceneAdditively(_parentDashboardSceneName, null);
+                    SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.ParentDashboardSceneName, null);
                     break;
                 case DeviceRole.Child:
-                    SceneLoader.Instance.LoadSceneAdditively(_hubSceneName, null);
+                    SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.HubSceneName, null);
                     break;
                 case DeviceRole.Unassigned:
                 default:
-                    SceneLoader.Instance.LoadSceneAdditively(_parentGateSceneName, null);
+                    SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.ParentGateSceneName, null);
                     break;
             }
         }

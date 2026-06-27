@@ -14,8 +14,12 @@ A free-to-play educational mobile game combining 2D mini-games with 3D isometric
 
 ## Core Game Loop
 
-```
-Play & Earn → Build & Unlock → Expand & Improve
+```mermaid
+flowchart LR
+    Play[Play Mini-Game] --> Earn[Earn Coins]
+    Earn --> Build[Unlock Chunk]
+    Build --> Expand[Building + Character Revealed]
+    Expand --> Play
 ```
 
 1. **Play:** Kid plays 2D mini-games (endless, educational, story-driven) to earn coins.
@@ -77,15 +81,16 @@ Play & Earn → Build & Unlock → Expand & Improve
 
 ## Experience Flow
 
-```
-Launch
-  └→ Parent Gate (PIN/code)
-       └→ Daily timer starts
-            └→ Hub World (locked chunks visible)
-                 ├→ Play mini-game → earn coins
-                 ├→ Spend coins → unlock chunk
-                 ├→ Chunk reveals building + character
-                 └→ Loop until timer expires
+```mermaid
+flowchart TD
+    Launch --> Gate[Parent Gate PIN/Code]
+    Gate --> Timer[Daily Timer Starts]
+    Timer --> Hub[Hub World - Locked Chunks]
+    Hub --> Play[Play Mini-Game]
+    Play --> Earn[Earn Coins]
+    Earn --> Unlock[Spend Coins - Unlock Chunk]
+    Unlock --> Reveal[Chunk Reveals Building + Character]
+    Reveal --> Hub
 ```
 
 No onboarding text. Everything taught via character voice guidance and visual icons.
@@ -118,8 +123,47 @@ No onboarding text. Everything taught via character voice guidance and visual ic
 |-------|--------|
 | **W1 — Foundation** | ✅ Complete (Architecture solid, localization infra works, secure onboarding & settings parent gate fully implemented) |
 | **W2 — Hub World** | ✅ Phase 2 implementation complete (see details below) |
-| **W3 — Mini-Game** | ✅ Playable, wired to hub loop. Prefab references need assignment. |
-| **W4 — Polish** | ❌ Character, reward screen, session timer all absent |
+| **W3 — Mini-Game** | ✅ Playable, fully integrated with hub loop. Cosmic Hopper ready. |
+| **Clean Up Phase** | ✅ Complete. Decoupled and refactored core, camera, inputs, save fallback, and localizations. |
+| **Architecture Refactoring** | ✅ Complete. Code audit fixes, ServiceLocator, singleton mesh decoupling, scene cleanup. |
+| **W4 — Polish** | ⏳ Next up (Character companion, session timer, QA, ship) |
+
+## Clean Up Phase Implementation Details
+
+### Done
+- Created `GameSceneConfig.cs` — ScriptableObject centralizing all scene target names, removing hardcoded string routing.
+- Created `HubCameraController.cs` — isolated camera drag, panning, resetting, and pan tween sequence actions from manager coordinator.
+- Created `HubInputHandler.cs` — isolated raycast mouse/touch tap detection with click-vs-drag threshold validation to prevent tap drift.
+- Created `PinKeypadUI.cs` — isolated parent gate keypad buffer string operations and masked display, leaving `ParentGateUI` as a pure role validation coordinator.
+- Created `LocalSaveSystem.cs` — PlayerPrefs-based JSON inventory save system to enable offline local caching when Firebase is mock-only.
+- Refactored `HubWorldManager.cs` — simplified down to a pure coordinating controller with no `Update` polling loop.
+- Refactored `ChunkController.cs` — reactively listens to global `OnChunkUnlocked` events to trigger its own reveal/unlock tweens.
+- Patched `InventoryData_SO.asset` — repaired missing serialized chunk array field.
+- Localized all UI elements — added localization entries and updated `ParentDashboardUI.cs` and `CoinsDisplayUI.cs` to remove raw Arabic strings from code.
+- Removed legacy assets — deleted `MiniGameHUD.cs` and `HubShopUI.cs` files.
+
+## Architecture Refactoring Phase Implementation Details
+
+### Done
+- Created `TweenableMonoBehaviour` base class (`Assets/_Project/Architecture/`) — eliminates duplicated `transform.DOKill()` across `ChunkController`, `BuildingController`, `UnlockConfirmationBubble`.
+- Created `CameraUtility` helper — deduplicates the 3-step camera auto-find pattern used by `HubInputHandler` and `HubCameraController`.
+- Fixed `HubCameraController` double-initialization — removed redundant camera discovery in `Start()` (already done in `Awake`).
+- Split `ParentGateUI` responsibilities:
+  - `ParentGateUI` now acts as pure flow controller (scene routing, role selection, cancel logic).
+  - `PinValidationView` owns all PIN keypad interaction and error display, fires `OnPinValidated`/`OnPinRejected` events.
+- Added `SceneLoader.LoadSceneSingle()` — enables non-additive scene switches through `SceneLoader` for consistency.
+- Replaced raw `SceneManager.LoadScene` in `HubWorldManager` with `SceneLoader.Instance.LoadSceneSingle()`.
+- Fixed ScriptableObject state bleed — `GameManager.Start()` calls `InventoryData.ResetData()` before loading saved data.
+- Made `ParentDashboardUI` reactive — subscribes to `OnCurrencyChanged`/`OnBuildingUnlocked` so progress stats update live.
+- Created `ServiceLocator` — all 6 singletons (`GameManager`, `SceneLoader`, `DeviceRoleManager`, `LocalizationManager`, `NetworkDispatcher`, `FirebaseManager`) register via `ServiceLocator.Register<T>()` in `Awake`. Their `Instance` properties now resolve through `ServiceLocator.Get<T>()`. Zero caller changes needed.
+  - `GameManager` additionally registers `ISaveSystem` for interface-based resolution.
+- Removed orphan `GameManager` and `SceneLoader` GameObjects from `2_HubWorld.unity` — they were dead `DontDestroyOnLoad` duplicates.
+- Renamed `ParentGateUI.cs` class to reflect flow-controller role while preserving scene bindings (class name kept as `ParentGateUI`).
+
+### Key Design Decisions
+- **ServiceLocator over pure singletons** — keeps backward compatibility (existing `.Instance` calls still work) while centralizing registration order and enabling null-safe resolution.
+- **Interface registration** — `ISaveSystem` is registered alongside `GameManager` so future code can depend on the abstraction, not the concrete manager.
+- **Minimal scene changes** — only orphan removals required scene file edits; all component wiring remained intact.
 
 ## Phase 2 Implementation Details
 
@@ -137,7 +181,7 @@ No onboarding text. Everything taught via character voice guidance and visual ic
 - **Camera** starts at scene default (0,10,-10); CameraRestPoint at (10,8,-8) used for unlock return animation. Camera drag/pan + R key reset
 - **Game rules** configured via `GameRuleConfig` ScriptableObject — tunable parameters visible in Inspector, swappable per mini-game
 ### Next Steps
-Test full flow: Play → tap building → CosmicHopper → earn coins → return → tap locked chunk → bubble → confirm/reject → unlock animation
+Test countries and set up Category validations (Math, Language, Logic) on chunks.
 
 ### Bugfixes Applied
 - **Coins not saving**: `BaseMiniGameManager.CompleteGame` now calls `GameManager.SaveGame()` before scene switch; warns if InventoryData is not assigned

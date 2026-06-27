@@ -11,6 +11,9 @@ namespace Project.UI
     /// </summary>
     public class ParentDashboardUI : MonoBehaviour
     {
+        [Header("Configuration")]
+        [SerializeField] private GameSceneConfig _sceneConfig;
+
         [Header("UI Components")]
         [SerializeField] private RTLTextMeshPro _titleText;      // Dynamic screen title (changes based on Parent vs In-Game Settings)
         [SerializeField] private RTLTextMeshPro _pinStatusText;  // Text displaying the current active parent PIN code
@@ -24,12 +27,31 @@ namespace Project.UI
         [Header("Controls")]
         [SerializeField] private GameObject _playModeButton;     // Button that transitions the device to Child Mode
 
-        [Header("Scene Names")]
-        [SerializeField] private string _parentDashboardSceneName = "ParentDashboard";
-
-        private void Start()
+        private void OnEnable()
         {
+            if (_inventoryData != null)
+            {
+                _inventoryData.OnCurrencyChanged += OnProgressChanged;
+                _inventoryData.OnBuildingUnlocked += OnProgressChanged;
+            }
             UpdateView();
+        }
+
+        private void OnDisable()
+        {
+            if (_inventoryData != null)
+            {
+                _inventoryData.OnCurrencyChanged -= OnProgressChanged;
+                _inventoryData.OnBuildingUnlocked -= OnProgressChanged;
+            }
+        }
+
+        private void OnProgressChanged(int _) { UpdateView(); }
+        private void OnProgressChanged(string _) { UpdateView(); }
+
+        private string T(string key, string fallback)
+        {
+            return LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(key) : fallback;
         }
 
         /// <summary>
@@ -46,7 +68,7 @@ namespace Project.UI
                 // Disable back-to-game button, but enable Play Mode switch button
                 if (_titleText != null)
                 {
-                    _titleText.text = "لوحة تحكم ولي الأمر";
+                    _titleText.text = T("dashboard_title_parent", "لوحة تحكم ولي الأمر");
                 }
                 if (_backButton != null)
                 {
@@ -63,7 +85,7 @@ namespace Project.UI
                 // Enable back-to-game button, but disable Play Mode switch button (already playing!)
                 if (_titleText != null)
                 {
-                    _titleText.text = "إعدادات اللعبة";
+                    _titleText.text = T("dashboard_title_settings", "إعدادات اللعبة");
                 }
                 if (_backButton != null)
                 {
@@ -78,7 +100,7 @@ namespace Project.UI
             // Display current active PIN
             if (_pinStatusText != null)
             {
-                _pinStatusText.text = $"الرمز الحالي: {DeviceRoleManager.Instance.GetPIN()}";
+                _pinStatusText.text = $"{T("dashboard_pin_status", "الرمز الحالي")}: {DeviceRoleManager.Instance.GetPIN()}";
             }
 
             // Display Child Inventory progress from the ScriptableObject
@@ -86,11 +108,11 @@ namespace Project.UI
             {
                 if (_coinsText != null)
                 {
-                    _coinsText.text = $"النقود الحالية: {_inventoryData.SoftCurrency}";
+                    _coinsText.text = $"{T("dashboard_coins_status", "النقود الحالية")}: {_inventoryData.SoftCurrency}";
                 }
                 if (_buildingsText != null)
                 {
-                    _buildingsText.text = $"المباني المفتوحة: {_inventoryData.UnlockedBuildingIds.Count}";
+                    _buildingsText.text = $"{T("dashboard_buildings_status", "المباني المفتوحة")}: {_inventoryData.UnlockedBuildingIds.Count}";
                 }
             }
         }
@@ -111,15 +133,15 @@ namespace Project.UI
         /// </summary>
         public void SwitchToPlayerMode()
         {
-            if (DeviceRoleManager.Instance == null) return;
+            if (DeviceRoleManager.Instance == null || _sceneConfig == null) return;
             
             // Set role to Child so that future boots go straight to the game
             DeviceRoleManager.Instance.SetRole(DeviceRole.Child);
 
             // Load Hub World additively and unload dashboard
-            SceneLoader.Instance.LoadSceneAdditively("2_HubWorld", () =>
+            SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.HubSceneName, () =>
             {
-                SceneLoader.Instance.UnloadScene(_parentDashboardSceneName, null);
+                SceneLoader.Instance.UnloadScene(_sceneConfig.ParentDashboardSceneName, null);
             });
         }
 
@@ -129,7 +151,8 @@ namespace Project.UI
         /// </summary>
         public void OnBackToGamePressed()
         {
-            SceneLoader.Instance.UnloadScene(_parentDashboardSceneName, null);
+            if (_sceneConfig == null) return;
+            SceneLoader.Instance.UnloadScene(_sceneConfig.ParentDashboardSceneName, null);
         }
     }
 }

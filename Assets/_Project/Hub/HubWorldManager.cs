@@ -1,10 +1,9 @@
 namespace Project.Hub
 {
-    using DG.Tweening;
+    using Project.Core;
     using Project.Data;
     using Project.UI;
     using UnityEngine;
-    using UnityEngine.SceneManagement;
 
     public class HubWorldManager : MonoBehaviour
     {
@@ -12,25 +11,46 @@ namespace Project.Hub
         [SerializeField] private InventoryData _inventoryData;
         [SerializeField] private ChunkController[] _chunks;
         [SerializeField] private GameObject _confirmationBubble;
-        [SerializeField] private Camera _hubCamera;
-        [SerializeField] private Transform _cameraRestPoint;
 
-        [Header("Settings")]
-        [SerializeField] private LayerMask _chunkLayer = -1;
-        [SerializeField] private float _cameraPanDuration = 0.8f;
-        [SerializeField] private float _cameraHoldDuration = 1.2f;
-        [SerializeField] private float _dragSensitivity = 0.02f;
+        [Header("Systems")]
+        [SerializeField] private HubCameraController _cameraController;
+        [SerializeField] private HubInputHandler _inputHandler;
 
         private UnlockConfirmationBubble _activeBubble;
-        private bool _isInputEnabled = true;
-        private Vector3 _initialCameraPosition;
-        private Quaternion _initialCameraRotation;
+
+        private void Awake()
+        {
+            // Auto-discover camera controller
+            if (_cameraController == null)
+            {
+                _cameraController = GetComponent<HubCameraController>();
+                if (_cameraController == null)
+                {
+                    _cameraController = FindObjectOfType<HubCameraController>();
+                }
+            }
+
+            // Auto-discover input handler
+            if (_inputHandler == null)
+            {
+                _inputHandler = GetComponent<HubInputHandler>();
+                if (_inputHandler == null)
+                {
+                    _inputHandler = FindObjectOfType<HubInputHandler>();
+                }
+            }
+        }
 
         private void OnEnable()
         {
             if (_inventoryData != null)
             {
                 _inventoryData.OnChunkUnlocked += HandleChunkUnlocked;
+            }
+
+            if (_inputHandler != null)
+            {
+                _inputHandler.OnInteractableTapped += HandleInteractableTapped;
             }
         }
 
@@ -41,39 +61,17 @@ namespace Project.Hub
                 _inventoryData.OnChunkUnlocked -= HandleChunkUnlocked;
             }
 
+            if (_inputHandler != null)
+            {
+                _inputHandler.OnInteractableTapped -= HandleInteractableTapped;
+            }
+
             DestroyActiveBubble();
         }
 
         private void Start()
         {
-            if (_hubCamera != null)
-            {
-                _initialCameraPosition = _hubCamera.transform.position;
-                _initialCameraRotation = _hubCamera.transform.rotation;
-            }
-
             InitializeChunks();
-        }
-
-        private void Update()
-        {
-            if (!_isInputEnabled) return;
-            HandleTap();
-            HandleCameraDrag();
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                ResetCamera();
-            }
-        }
-
-        public void ResetCamera()
-        {
-            if (_hubCamera == null) return;
-
-            _hubCamera.transform.DOKill();
-            _hubCamera.transform.position = _initialCameraPosition;
-            _hubCamera.transform.rotation = _initialCameraRotation;
         }
 
         private void InitializeChunks()
@@ -89,30 +87,9 @@ namespace Project.Hub
             }
         }
 
-        private void HandleTap()
+        private void HandleInteractableTapped(Collider col)
         {
-            if (Input.touchCount > 0)
-            {
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase != TouchPhase.Began) return;
-                ProcessTap(touch.position);
-            }
-            else if (Input.GetMouseButtonDown(0))
-            {
-                ProcessTap(Input.mousePosition);
-            }
-        }
-
-        private void ProcessTap(Vector2 screenPosition)
-        {
-            if (_hubCamera == null) return;
-
-            if (_activeBubble != null && _activeBubble.gameObject.activeInHierarchy) return;
-
-            Ray ray = _hubCamera.ScreenPointToRay(screenPosition);
-            if (!Physics.Raycast(ray, out RaycastHit hit, 100f, _chunkLayer)) return;
-
-            ChunkController chunk = hit.collider.GetComponentInParent<ChunkController>();
+            ChunkController chunk = col.GetComponentInParent<ChunkController>();
             if (chunk == null) return;
 
             if (!chunk.IsUnlocked)
@@ -121,48 +98,14 @@ namespace Project.Hub
                 return;
             }
 
-            BuildingController building = hit.collider.GetComponentInParent<BuildingController>();
+            BuildingController building = col.GetComponentInParent<BuildingController>();
             if (building != null && !string.IsNullOrEmpty(building.MiniGameScene))
             {
-                SceneManager.LoadScene(building.MiniGameScene);
+                if (SceneLoader.Instance != null)
+                    SceneLoader.Instance.LoadSceneSingle(building.MiniGameScene, null);
+                else
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(building.MiniGameScene);
             }
-        }
-
-        private void HandleCameraDrag()
-        {
-            if (_hubCamera == null) return;
-            if (_activeBubble != null && _activeBubble.gameObject.activeInHierarchy) return;
-
-            if (Input.touchCount == 1)
-            {
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Moved)
-                {
-                    PanCamera(touch.deltaPosition * _dragSensitivity);
-                }
-            }
-            else if (Input.GetMouseButton(0))
-            {
-                float mx = Input.GetAxis("Mouse X");
-                float my = Input.GetAxis("Mouse Y");
-                if (Mathf.Abs(mx) > 0.01f || Mathf.Abs(my) > 0.01f)
-                {
-                    PanCamera(new Vector2(mx, my) * _dragSensitivity * 50f);
-                }
-            }
-        }
-
-        private void PanCamera(Vector2 delta)
-        {
-            Vector3 right = _hubCamera.transform.right;
-            Vector3 forward = _hubCamera.transform.forward;
-            right.y = 0f;
-            forward.y = 0f;
-            right.Normalize();
-            forward.Normalize();
-
-            Vector3 movement = (right * -delta.x + forward * -delta.y);
-            _hubCamera.transform.position += movement;
         }
 
         private void ShowConfirmationBubble(ChunkController chunk)
@@ -176,30 +119,32 @@ namespace Project.Hub
 
             if (_activeBubble != null)
             {
-                _activeBubble.Setup(chunk, _inventoryData, OnConfirmUnlock, OnCancelUnlock);
+                _activeBubble.Setup(
+                    chunk.UnlockCost,
+                    () => OnConfirmUnlock(chunk),
+                    OnCancelUnlock
+                );
             }
         }
 
         private void OnConfirmUnlock(ChunkController chunk)
         {
-            if (_inventoryData == null) return;
-            if (chunk == null) return;
+            if (_inventoryData == null || chunk == null) return;
 
-            if (_inventoryData.SoftCurrency < chunk.UnlockCost)
+            // Attempt transaction using Encapsulated Business Logic in InventoryData
+            if (_inventoryData.TrySpendCurrency(chunk.UnlockCost))
             {
+                _inventoryData.UnlockChunk(chunk.ChunkId);
+                DestroyActiveBubble();
+            }
+            else
+            {
+                // Failed transaction - show UI validation error
                 if (_activeBubble != null)
                 {
                     _activeBubble.PlayValidationError();
                 }
-                return;
             }
-
-            if (_inventoryData.TrySpendCurrency(chunk.UnlockCost))
-            {
-                _inventoryData.UnlockChunk(chunk.ChunkId);
-            }
-
-            DestroyActiveBubble();
         }
 
         private void OnCancelUnlock()
@@ -211,34 +156,20 @@ namespace Project.Hub
         {
             ChunkController chunk = FindChunkById(chunkId);
             if (chunk == null) return;
-
-            chunk.PlayUnlockAnimation();
-            PlayUnlockCameraSequence(chunk);
-        }
-
-        private void PlayUnlockCameraSequence(ChunkController chunk)
-        {
-            if (_hubCamera == null) return;
-
-            _isInputEnabled = false;
-
-            Vector3 targetPosition = chunk.transform.position + Vector3.back * 5f + Vector3.up * 3f;
-
-            Sequence cameraSequence = DOTween.Sequence();
-            cameraSequence.Append(_hubCamera.transform.DOMove(targetPosition, _cameraPanDuration).SetEase(Ease.InOutSine));
-            cameraSequence.Join(_hubCamera.transform.DOLookAt(chunk.transform.position, _cameraPanDuration));
-            cameraSequence.AppendInterval(_cameraHoldDuration);
-
-            if (_cameraRestPoint != null)
+            
+            if (_cameraController != null)
             {
-                cameraSequence.Append(_hubCamera.transform.DOMove(_cameraRestPoint.position, _cameraPanDuration).SetEase(Ease.InOutSine));
-                cameraSequence.Join(_hubCamera.transform.DOLookAt(_cameraRestPoint.position + _cameraRestPoint.forward * 10f, _cameraPanDuration));
+                // Halt interaction systems during camera sequence by turning off the components
+                if (_inputHandler != null) _inputHandler.enabled = false;
+                _cameraController.enabled = false;
+
+                _cameraController.PlayUnlockSequence(chunk.transform, () =>
+                {
+                    // Restore interaction systems when completed
+                    if (_inputHandler != null) _inputHandler.enabled = true;
+                    _cameraController.enabled = true;
+                });
             }
-
-            cameraSequence.OnComplete(() =>
-            {
-                _isInputEnabled = true;
-            });
         }
 
         private ChunkController FindChunkById(string chunkId)

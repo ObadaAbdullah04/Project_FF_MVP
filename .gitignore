@@ -74,3 +74,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 *.bundle
+
+# Ignore Firebase/Google configuration files
+google-services.json
+GoogleService-Info.plist

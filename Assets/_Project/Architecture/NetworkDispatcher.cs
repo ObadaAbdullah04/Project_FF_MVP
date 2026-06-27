@@ -8,28 +8,19 @@ namespace Project.Architecture
     {
         private ConcurrentQueue<Action> _executionQueue;
 
-        public static NetworkDispatcher Instance { get; private set; }
+        public static NetworkDispatcher Instance => ServiceLocator.Get<NetworkDispatcher>();
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                _executionQueue = new ConcurrentQueue<Action>();
-            }
-            else
+            if (Instance != null)
             {
                 Destroy(gameObject);
+                return;
             }
-        }
 
-        private void OnDestroy()
-        {
-            if (Instance == this)
-            {
-                Instance = null;
-            }
+            DontDestroyOnLoad(gameObject);
+            ServiceLocator.Register<NetworkDispatcher>(this);
+            _executionQueue = new ConcurrentQueue<Action>();
         }
 
         private void Update()

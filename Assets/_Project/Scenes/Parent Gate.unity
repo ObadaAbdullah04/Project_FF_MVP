@@ -465,7 +465,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uFEE3\uFEE6 \uFBFE\uFEB4\uFE98\uFEA8\uFEAA\uFEE1 \uFEEB\uFEAC\uFE8D \uFE8D\uFEDF\uFEA0\uFEEC\uFE8E\uFEAF\u061F"
+  m_text: "\uFEE3\uFEE6 \uFEF3\uFEB4\uFE98\uFEA8\uFEAA\uFEE1 \uFEEB\uFEAC\uFE8D \uFE8D\uFEDF\uFEA0\uFEEC\uFE8E\uFEAF\u061F"
   m_isRightToLeft: 1
   m_fontAsset: {fileID: 11400000, guid: 3fbde2e562e333d488bc46986fc6f4f1, type: 2}
   m_sharedMaterial: {fileID: -6949820610600499109, guid: 3fbde2e562e333d488bc46986fc6f4f1, type: 2}
@@ -1624,6 +1624,7 @@ GameObject:
   m_Component:
   - component: {fileID: 709776438}
   - component: {fileID: 709776437}
+  - component: {fileID: 709776439}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1697,6 +1698,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &709776439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709776435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &721135835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1915,7 +1960,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2059,13 +2104,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnClearPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2193,13 +2238,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnBackspacePressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2485,13 +2530,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3573,6 +3618,7 @@ GameObject:
   - component: {fileID: 1344593947}
   - component: {fileID: 1344593946}
   - component: {fileID: 1344593945}
+  - component: {fileID: 1344593950}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -3592,13 +3638,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c52a16ee1122d14479917e013b993309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sceneConfig: {fileID: 11400000, guid: 1fdc41b26b8168444b98c6cc50f13585, type: 2}
   _roleSelectionPanel: {fileID: 1577471844}
   _pinEntryPanel: {fileID: 1934196460}
-  _pinDisplayText: {fileID: 1848319803}
-  _errorText: {fileID: 1951701593}
-  _hubSceneName: 2_HubWorld
-  _parentDashboardSceneName: ParentDashboard
-  _parentGateSceneName: Parent Gate
+  _pinValidation: {fileID: 1344593950}
 --- !u!114 &1344593946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3683,6 +3726,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1344593950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344593944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8461326c55aaccc49962d6005b80ea59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _keypad: {fileID: 1934196464}
+  _errorText: {fileID: 1951701593}
 --- !u!1 &1410280876
 GameObject:
   m_ObjectHideFlags: 0
@@ -3973,13 +4030,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 8
           m_FloatArgument: 0
           m_StringArgument: 
@@ -4385,13 +4442,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 5
           m_FloatArgument: 0
           m_StringArgument: 
@@ -4676,13 +4733,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -4810,13 +4867,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 7
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5301,13 +5358,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5435,13 +5492,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5569,13 +5626,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 9
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5703,13 +5760,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 4
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5764,6 +5821,7 @@ GameObject:
   - component: {fileID: 1934196461}
   - component: {fileID: 1934196463}
   - component: {fileID: 1934196462}
+  - component: {fileID: 1934196464}
   m_Layer: 0
   m_Name: PinEntryPanel
   m_TagString: Untagged
@@ -5833,6 +5891,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1934196460}
   m_CullTransparentMesh: 1
+--- !u!114 &1934196464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934196460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e2359f824d1e0f4ebf650b02b8e0a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pinDisplayText: {fileID: 1848319803}
 --- !u!1 &1948929263
 GameObject:
   m_ObjectHideFlags: 0
@@ -5917,13 +5988,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1344593945}
-        m_TargetAssemblyTypeName: Project.UI.ParentGateUI, Assembly-CSharp
+      - m_Target: {fileID: 1934196464}
+        m_TargetAssemblyTypeName: Project.UI.PinKeypadUI, _Project
         m_MethodName: OnDigitPressed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 6
           m_FloatArgument: 0
           m_StringArgument: 
@@ -6242,7 +6313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uFEED\uFEDF\uFBFD \uFE8D\uFEF7\uFEE3\uFEAE"
+  m_text: "\uFEED\uFEDF\uFEF2 \uFE8D\uFEF7\uFEE3\uFEAE"
   m_isRightToLeft: 1
   m_fontAsset: {fileID: 11400000, guid: 3fbde2e562e333d488bc46986fc6f4f1, type: 2}
   m_sharedMaterial: {fileID: -6949820610600499109, guid: 3fbde2e562e333d488bc46986fc6f4f1, type: 2}
