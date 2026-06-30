@@ -4,30 +4,36 @@ namespace Project.Core
     using System;
     using Project.Architecture;
 
-    // Defines the possible operational states of the device.
     public enum DeviceRole
     {
-        Unassigned, // Device is clean and needs role selection (onboarding phase)
-        Parent,     // Device is in Parent Tracking/Companion Mode
-        Child       // Device is in Child Gameplay Mode
+        Unassigned,
+        Parent,
+        Child
     }
 
-    /// <summary>
-    /// Singleton manager that handles storing and loading the Device Role and the parent PIN code.
-    /// Persists data locally on the device using Unity's PlayerPrefs.
-    /// </summary>
+    public enum AgeTier
+    {
+        None,
+        Under6,
+        Ages6Plus
+    }
+
     public class DeviceRoleManager : MonoBehaviour
     {
-        // Singleton instance reference
         public static DeviceRoleManager Instance => ServiceLocator.Get<DeviceRoleManager>();
 
-        // PlayerPrefs storage keys
-        private const string RoleKey = "DeviceRole";
-        private const string PINKey = "ParentPIN";
+        public const string RoleKey = "DeviceRole";
+        public const string PINKey = "ParentPIN";
+        public const string AgeTierKey = "AgeTier";
+        public const string TimeLimitKey = "DailyTimeLimitMinutes";
         private const string DefaultPIN = "1234";
 
-        // Event triggered when the device role changes (e.g. from parent to child)
+        /// <summary>Fired on role change. Currently unused — reserved for future reactive systems.</summary>
         public event Action<DeviceRole> OnRoleChanged;
+
+        // Default time limits
+        public const int DefaultUnder6Limit = 30;
+        public const int DefaultAges6PlusLimit = 60;
 
         private void Awake()
         {
@@ -41,22 +47,16 @@ namespace Project.Core
             ServiceLocator.Register<DeviceRoleManager>(this);
         }
 
-        /// <summary>
-        /// Retrieves the currently saved device role. Defaults to Unassigned.
-        /// </summary>
+        // --- Role ---
+
         public DeviceRole GetRole()
         {
             string savedRole = PlayerPrefs.GetString(RoleKey, DeviceRole.Unassigned.ToString());
             if (Enum.TryParse(savedRole, out DeviceRole role))
-            {
                 return role;
-            }
             return DeviceRole.Unassigned;
         }
 
-        /// <summary>
-        /// Saves a new device role to the local PlayerPrefs and alerts listeners.
-        /// </summary>
         public void SetRole(DeviceRole role)
         {
             PlayerPrefs.SetString(RoleKey, role.ToString());
@@ -64,17 +64,13 @@ namespace Project.Core
             OnRoleChanged?.Invoke(role);
         }
 
-        /// <summary>
-        /// Retrieves the parent PIN code. Defaults to "1234".
-        /// </summary>
+        // --- PIN ---
+
         public string GetPIN()
         {
             return PlayerPrefs.GetString(PINKey, DefaultPIN);
         }
 
-        /// <summary>
-        /// Saves a new 4-digit PIN. Validates that the input is exactly 4 digits.
-        /// </summary>
         public void SetPIN(string newPIN)
         {
             if (string.IsNullOrEmpty(newPIN) || newPIN.Length != 4) return;
@@ -82,21 +78,53 @@ namespace Project.Core
             PlayerPrefs.Save();
         }
 
-        /// <summary>
-        /// Validates an entered PIN against the saved one.
-        /// </summary>
         public bool ValidatePIN(string inputPIN)
         {
             return GetPIN() == inputPIN;
         }
 
-        /// <summary>
-        /// Clears saved role and PIN data (reverts device to unassigned).
-        /// </summary>
+        // --- Age Tier ---
+
+        public AgeTier GetAgeTier()
+        {
+            string saved = PlayerPrefs.GetString(AgeTierKey, AgeTier.None.ToString());
+            if (Enum.TryParse(saved, out AgeTier tier))
+                return tier;
+            return AgeTier.None;
+        }
+
+        public void SetAgeTier(AgeTier tier)
+        {
+            PlayerPrefs.SetString(AgeTierKey, tier.ToString());
+            PlayerPrefs.Save();
+        }
+
+        // --- Daily Time Limit ---
+
+        public int GetDailyTimeLimitMinutes()
+        {
+            return PlayerPrefs.GetInt(TimeLimitKey, GetDefaultTimeLimit());
+        }
+
+        public void SetDailyTimeLimitMinutes(int minutes)
+        {
+            PlayerPrefs.SetInt(TimeLimitKey, Mathf.Max(5, minutes));
+            PlayerPrefs.Save();
+        }
+
+        public int GetDefaultTimeLimit()
+        {
+            return GetAgeTier() == AgeTier.Under6 ? DefaultUnder6Limit : DefaultAges6PlusLimit;
+        }
+
+        // --- Reset ---
+
         public void ResetAll()
         {
             PlayerPrefs.DeleteKey(RoleKey);
             PlayerPrefs.DeleteKey(PINKey);
+            PlayerPrefs.DeleteKey(AgeTierKey);
+            PlayerPrefs.DeleteKey(TimeLimitKey);
             PlayerPrefs.Save();
         }
     }

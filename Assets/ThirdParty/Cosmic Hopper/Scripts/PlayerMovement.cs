@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 namespace FlappyJump
 {
-    //Player movement logic
     public class PlayerMovement : MonoBehaviour
     {
-
         public Rigidbody2D rb;
         private AudioSource jumpSound;
         private SpriteRenderer playerSprite;
@@ -16,12 +11,14 @@ namespace FlappyJump
         void Start()
         {
             jumpSound = GameObject.Find("JumpSound").GetComponent<AudioSource>();
-            playerSprite = GetComponent<SpriteRenderer> ();
+            playerSprite = GetComponent<SpriteRenderer>();
         }
 
         void FixedUpdate()
         {
-            rb.velocity = new Vector2(4 + Vars.playerSpeed, rb.velocity.y);
+            CosmicHopperAdapter adapter = CosmicHopperAdapter.Instance;
+            float speed = adapter != null ? adapter.playerSpeed : 0f;
+            rb.velocity = new Vector2(4 + speed, rb.velocity.y);
         }
 
         void Update()
@@ -40,18 +37,17 @@ namespace FlappyJump
             rb.AddForce(new Vector2(0, 500));
             rb.angularVelocity = 0;
             rb.AddTorque(-10);
-            // PlayerPrefs.SetInt("NumberOfJumps", PlayerPrefs.GetInt("NumberOfJumps") + 1);
         }
 
         private void InstantiateJumpParticle()
         {
             GameObject particle = Instantiate(Resources.Load("SuccessParticle")) as GameObject;
-            if (particle != null) particle.transform.SetParent(this.transform.parent); // FIX LEAK
+            if (particle != null) particle.transform.SetParent(this.transform.parent);
 
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0f;
             particle.transform.position = mousePos;
-            
+
             var main = particle.GetComponent<ParticleSystem>().main;
             main.startColor = playerSprite.color;
         }
@@ -60,20 +56,18 @@ namespace FlappyJump
         {
             if (col.gameObject.name == "Star")
             {
-                // Architecture hook: Replace PlayerPrefs with ReportScore
-                Project.MiniGames.UniversalGameController controller = Object.FindAnyObjectByType<Project.MiniGames.UniversalGameController>();
-                if (controller != null) controller.ReportScore(1);
+                CosmicHopperAdapter adapter = CosmicHopperAdapter.Instance;
+                if (adapter != null) adapter.OnScoreChanged();
 
                 GameObject starsParticle = Instantiate(Resources.Load("StarsParticle")) as GameObject;
-                if (starsParticle != null) 
+                if (starsParticle != null)
                 {
-                    starsParticle.transform.SetParent(this.transform.parent); // FIX LEAK
+                    starsParticle.transform.SetParent(this.transform.parent);
                     starsParticle.transform.position = new Vector3(col.gameObject.transform.position.x, col.gameObject.transform.position.y, 1);
                 }
                 Destroy(col.gameObject);
                 GameObject.Find("StarSound")?.GetComponent<AudioSource>()?.Play();
             }
         }
-
     }
 }

@@ -1,158 +1,200 @@
 namespace Project.UI
 {
     using UnityEngine;
+    using UnityEngine.UI;
     using Project.Core;
     using Project.Data;
     using RTLTMPro;
 
-    /// <summary>
-    /// Handles the user interface logic for the Parent Dashboard, which displays child
-    /// gameplay progress statistics and allows configuring parent parameters (like changing PINs).
-    /// </summary>
     public class ParentDashboardUI : MonoBehaviour
     {
         [Header("Configuration")]
         [SerializeField] private GameSceneConfig _sceneConfig;
 
         [Header("UI Components")]
-        [SerializeField] private RTLTextMeshPro _titleText;      // Dynamic screen title (changes based on Parent vs In-Game Settings)
-        [SerializeField] private RTLTextMeshPro _pinStatusText;  // Text displaying the current active parent PIN code
-        [SerializeField] private GameObject _backButton;         // Back to game button (only active when accessed from in-game settings)
-
-        [Header("Child Progress Data")]
-        [SerializeField] private InventoryData _inventoryData;  // Reference to ScriptableObject holding currency and unlocks
-        [SerializeField] private RTLTextMeshPro _coinsText;      // Text showing soft currency balance (Arabic formatted)
-        [SerializeField] private RTLTextMeshPro _buildingsText;  // Text showing number of unlocked buildings (Arabic formatted)
+        [SerializeField] private RTLTextMeshPro _titleText;
+        [SerializeField] private GameObject _backButton;
 
         [Header("Controls")]
-        [SerializeField] private GameObject _playModeButton;     // Button that transitions the device to Child Mode
+        [SerializeField] private GameObject _playModeButton;
+
+        [Header("Widgets")]
+        [SerializeField] private CategoryStatsWidget _categoryStatsWidget;
+        [SerializeField] private SessionHistoryWidget _sessionHistoryWidget;
+        [SerializeField] private StrengthWeaknessIndicator _strengthWeaknessIndicator;
+        [SerializeField] private ParentControlsPanel _parentControlsPanel;
+
+        [Header("Insights")]
+        [SerializeField] private RTLTextMeshPro _insightText;
+
+        [Header("Data References")]
+        [SerializeField] private ChildProgressData _childProgressData;
+
+        private void Start()
+        {
+            if (_playModeButton != null)
+            {
+                Button playBtn = _playModeButton.GetComponent<Button>();
+                if (playBtn != null)
+                {
+                    playBtn.onClick.RemoveAllListeners();
+                    playBtn.onClick.AddListener(SwitchToPlayerMode);
+                }
+            }
+
+            if (_backButton != null)
+            {
+                Button backBtn = _backButton.GetComponent<Button>();
+                if (backBtn != null)
+                {
+                    backBtn.onClick.RemoveAllListeners();
+                    backBtn.onClick.AddListener(OnBackToGamePressed);
+                }
+            }
+        }
 
         private void OnEnable()
         {
-            if (_inventoryData != null)
-            {
-                _inventoryData.OnCurrencyChanged += OnProgressChanged;
-                _inventoryData.OnBuildingUnlocked += OnProgressChanged;
-            }
-            UpdateView();
+            Refresh();
         }
 
-        private void OnDisable()
+        private void SetButtonText(GameObject btnObj, string text)
         {
-            if (_inventoryData != null)
-            {
-                _inventoryData.OnCurrencyChanged -= OnProgressChanged;
-                _inventoryData.OnBuildingUnlocked -= OnProgressChanged;
-            }
+            if (btnObj == null) return;
+            RTLTextMeshPro tmp = btnObj.GetComponentInChildren<RTLTextMeshPro>(true);
+            if (tmp != null) tmp.text = text;
         }
-
-        private void OnProgressChanged(int _) { UpdateView(); }
-        private void OnProgressChanged(string _) { UpdateView(); }
 
         private string T(string key, string fallback)
         {
             return LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(key) : fallback;
         }
 
-        /// <summary>
-        /// Populates progress data and sets button visibility depending on the active device role.
-        /// </summary>
-        private void UpdateView()
+        public void Refresh()
         {
             if (DeviceRoleManager.Instance == null) return;
 
             DeviceRole role = DeviceRoleManager.Instance.GetRole();
-            if (role == DeviceRole.Parent)
+            bool isParentMode = role == DeviceRole.Parent;
+
+            if (_titleText != null)
+                _titleText.text = isParentMode
+                    ? T("dashboard_title_parent", "Parent Dashboard")
+                    : T("dashboard_title_settings", "Settings");
+
+            if (_backButton != null)
             {
-                // Dedicated Parent Companion Mode:
-                // Disable back-to-game button, but enable Play Mode switch button
-                if (_titleText != null)
-                {
-                    _titleText.text = T("dashboard_title_parent", "لوحة تحكم ولي الأمر");
-                }
-                if (_backButton != null)
-                {
-                    _backButton.SetActive(false);
-                }
-                if (_playModeButton != null)
-                {
-                    _playModeButton.SetActive(true);
-                }
-            }
-            else
-            {
-                // In-Game Settings Mode:
-                // Enable back-to-game button, but disable Play Mode switch button (already playing!)
-                if (_titleText != null)
-                {
-                    _titleText.text = T("dashboard_title_settings", "إعدادات اللعبة");
-                }
-                if (_backButton != null)
-                {
-                    _backButton.SetActive(true);
-                }
-                if (_playModeButton != null)
-                {
-                    _playModeButton.SetActive(false);
-                }
+                _backButton.SetActive(!isParentMode);
+                SetButtonText(_backButton, T("dashboard_btn_back", "< Back"));
             }
 
-            // Display current active PIN
-            if (_pinStatusText != null)
+            if (_playModeButton != null)
             {
-                _pinStatusText.text = $"{T("dashboard_pin_status", "الرمز الحالي")}: {DeviceRoleManager.Instance.GetPIN()}";
+                _playModeButton.SetActive(isParentMode);
+                SetButtonText(_playModeButton, T("dashboard_btn_play_mode", "Play Mode"));
             }
 
-            // Display Child Inventory progress from the ScriptableObject
-            if (_inventoryData != null)
-            {
-                if (_coinsText != null)
-                {
-                    _coinsText.text = $"{T("dashboard_coins_status", "النقود الحالية")}: {_inventoryData.SoftCurrency}";
-                }
-                if (_buildingsText != null)
-                {
-                    _buildingsText.text = $"{T("dashboard_buildings_status", "المباني المفتوحة")}: {_inventoryData.UnlockedBuildingIds.Count}";
-                }
-            }
+            if (_categoryStatsWidget != null)
+                _categoryStatsWidget.Refresh();
+
+            if (_sessionHistoryWidget != null)
+                _sessionHistoryWidget.Refresh();
+
+            if (_strengthWeaknessIndicator != null)
+                _strengthWeaknessIndicator.Refresh();
+
+            if (_parentControlsPanel != null)
+                _parentControlsPanel.Refresh();
+
+            RefreshInsights();
         }
 
-        /// <summary>
-        /// Updates the parent PIN code and refreshes the display.
-        /// </summary>
-        public void ChangePIN(string newPIN)
+        private void RefreshInsights()
         {
-            if (DeviceRoleManager.Instance == null) return;
-            DeviceRoleManager.Instance.SetPIN(newPIN);
-            UpdateView();
+            if (_insightText == null || _childProgressData == null) return;
+
+            LocalizeSectionHeader();
+
+            ChildInsightReport report = ChildInsightAnalyzer.Analyze(_childProgressData);
+
+            if (!report.hasData)
+            {
+                _insightText.text = T("insight_no_data", "Play more games to see insights!");
+                return;
+            }
+
+            _insightText.text = string.Format("{0}\n{1}\n{2}\n{3}",
+                FormatInsight("insight_label_engagement", report.engagementKey),
+                FormatInsight("insight_label_style", report.dominantStyleKey),
+                FormatInsight("insight_label_independence", report.independenceKey),
+                FormatInsight("insight_label_confidence", report.confidenceKey));
         }
 
-        /// <summary>
-        /// Transitions the device role to Child mode and launches the Hub World.
-        /// Called by the "Switch to Player Mode" button on the Dashboard.
-        /// </summary>
+        private void LocalizeSectionHeader()
+        {
+            if (_insightText == null) return;
+            Transform section = _insightText.transform.parent;
+            if (section == null) return;
+            Transform header = section.Find("SectionHeader");
+            if (header == null) return;
+            RTLTextMeshPro tmp = header.GetComponent<RTLTextMeshPro>();
+            if (tmp == null) return;
+            tmp.text = T("insight_section_header", "Progress Overview");
+        }
+
+        private string FormatInsight(string labelKey, string valueKey)
+        {
+            string label = T(labelKey, labelKey);
+            string value = T(valueKey, valueKey);
+            return string.Format("{0}: {1}", label, value);
+        }
+
         public void SwitchToPlayerMode()
         {
             if (DeviceRoleManager.Instance == null || _sceneConfig == null) return;
-            
-            // Set role to Child so that future boots go straight to the game
+
             DeviceRoleManager.Instance.SetRole(DeviceRole.Child);
 
-            // Load Hub World additively and unload dashboard
-            SceneLoader.Instance.LoadSceneAdditively(_sceneConfig.HubSceneName, () =>
+            if (SessionTimer.Instance != null)
             {
-                SceneLoader.Instance.UnloadScene(_sceneConfig.ParentDashboardSceneName, null);
-            });
+                SessionTimer.Instance.StartSession();
+            }
+
+            MenuManager.Instance.HideAll();
+
+            // Make sure Hub is loaded, otherwise transition to it
+            bool hubLoaded = false;
+            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+            {
+                if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).name == _sceneConfig.HubSceneName)
+                {
+                    hubLoaded = true;
+                    break;
+                }
+            }
+
+            if (!hubLoaded)
+            {
+                SceneLoader.Instance.TransitionToScene(_sceneConfig.HubSceneName, null);
+            }
         }
 
-        /// <summary>
-        /// Returns to the gameplay Hub without changing device roles.
-        /// Called by the "Back to Game" button.
-        /// </summary>
         public void OnBackToGamePressed()
         {
-            if (_sceneConfig == null) return;
-            SceneLoader.Instance.UnloadScene(_sceneConfig.ParentDashboardSceneName, null);
+            MenuManager.Instance.HideAll();
+        }
+
+        public void ResetChildData()
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ResetAllData();
+            }
+            else
+            {
+                Debug.LogWarning("Cannot reset data: GameManager is missing.");
+            }
+            Refresh();
         }
     }
 }

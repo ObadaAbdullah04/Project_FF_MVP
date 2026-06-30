@@ -179,6 +179,9 @@ namespace Project.Editor
         {
             GameObject go = CreateLabel(root.GetComponent<RectTransform>(), "ScoreText", "0", new Vector2(0, -60), new Vector2(300, 60));
             hud.SetScoreText(go.GetComponent<RTLTextMeshPro>());
+            GameObject bestGo = CreateLabel(root.GetComponent<RectTransform>(), "BestScoreText", "0", new Vector2(0, -110), new Vector2(300, 40));
+            bestGo.GetComponent<RTLTextMeshPro>().fontSize = 24;
+            hud.SetBestScoreText(bestGo.GetComponent<RTLTextMeshPro>());
         }
 
         private static void CreateTimerText(GameObject root, UniversalMiniGameHUD hud)
@@ -265,7 +268,7 @@ namespace Project.Editor
             panelRT.anchorMin = new Vector2(0.5f, 0.5f);
             panelRT.anchorMax = new Vector2(0.5f, 0.5f);
             panelRT.anchoredPosition = Vector2.zero;
-            panelRT.sizeDelta = new Vector2(500, 400);
+            panelRT.sizeDelta = new Vector2(500, 520);
 
             Image panelImg = panel.GetComponent<Image>();
             panelImg.color = new Color(0.15f, 0.15f, 0.2f);
@@ -273,10 +276,21 @@ namespace Project.Editor
             GameObject titleLabel = CreateLabel(panelRT, "TitleLabel", "", Vector2.up * 80, new Vector2(400, 60));
             hud.SetSummaryTitleText(titleLabel.GetComponent<RTLTextMeshPro>());
 
-            GameObject coinsLabel = CreateLabel(panelRT, "CoinsLabel", "", Vector2.down * 30, new Vector2(400, 50));
+            GameObject scoreLabel = CreateLabel(panelRT, "ScoreLabel", "", Vector2.up * 30, new Vector2(400, 50));
+            hud.SetSummaryScoreText(scoreLabel.GetComponent<RTLTextMeshPro>());
+
+            GameObject bestLabel = CreateLabel(panelRT, "BestScoreLabel", "", Vector2.down * 20, new Vector2(400, 50));
+            bestLabel.GetComponent<RTLTextMeshPro>().fontSize = 28;
+            hud.SetSummaryBestScoreText(bestLabel.GetComponent<RTLTextMeshPro>());
+
+            GameObject coinsLabel = CreateLabel(panelRT, "CoinsLabel", "", Vector2.down * 70, new Vector2(400, 50));
             hud.SetSummaryCoinsText(coinsLabel.GetComponent<RTLTextMeshPro>());
 
-            GameObject backBtn = CreateButton(panelRT, "BackToCityButton", "", Vector2.down * 120, new Vector2(300, 70));
+            GameObject replayBtn = CreateButton(panelRT, "ReplayButton", "", Vector2.down * 140, new Vector2(300, 70));
+            hud.SetReplayButton(replayBtn.GetComponent<Button>());
+            hud.SetReplayButtonText(replayBtn.GetComponentInChildren<RTLTextMeshPro>());
+
+            GameObject backBtn = CreateButton(panelRT, "BackToCityButton", "", Vector2.down * 210, new Vector2(300, 70));
             hud.SetBackToCityButton(backBtn.GetComponent<Button>());
             hud.SetBackToCityButtonText(backBtn.GetComponentInChildren<RTLTextMeshPro>());
             hud.SetSummaryPanel(panelRT);

@@ -4,11 +4,13 @@ namespace Project.Hub
     using Project.Data;
     using Project.UI;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     public class HubWorldManager : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private InventoryData _inventoryData;
+        [SerializeField] private ChildProgressData _childProgressData;
         [SerializeField] private ChunkController[] _chunks;
         [SerializeField] private GameObject _confirmationBubble;
 
@@ -39,6 +41,25 @@ namespace Project.Hub
                     _inputHandler = FindObjectOfType<HubInputHandler>();
                 }
             }
+        }
+
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R))
+            {
+                ResetAndReload();
+            }
+        }
+
+        private void ResetAndReload()
+        {
+            Debug.Log("[Dev] Clearing saved data via GameManager...");
+            
+            if (GameManager.Instance != null)
+                GameManager.Instance.ResetAllData();
+            
+            if (SceneLoader.Instance != null)
+                SceneLoader.Instance.TransitionToScene(SceneManager.GetActiveScene().name, null);
         }
 
         private void OnEnable()
@@ -99,12 +120,18 @@ namespace Project.Hub
             }
 
             BuildingController building = col.GetComponentInParent<BuildingController>();
-            if (building != null && !string.IsNullOrEmpty(building.MiniGameScene))
+            if (building != null)
             {
+                if (string.IsNullOrEmpty(building.MiniGameScene))
+                {
+                    Debug.LogWarning($"Building '{building.name}' has no mini-game scene assigned. Tapping does nothing.", building);
+                    return;
+                }
+
                 if (SceneLoader.Instance != null)
-                    SceneLoader.Instance.LoadSceneSingle(building.MiniGameScene, null);
+                    SceneLoader.Instance.TransitionToScene(building.MiniGameScene, null);
                 else
-                    UnityEngine.SceneManagement.SceneManager.LoadScene(building.MiniGameScene);
+                    Debug.LogError("SceneLoader is missing! Cannot transition.");
             }
         }
 

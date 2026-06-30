@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: da1a9c7802f7e464c98eedad0855cbd3
+timeCreated: 1572743982
+licenseType: Store
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Airstrip Four
+  fontNames:
+  - Airstrip Four
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 1
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

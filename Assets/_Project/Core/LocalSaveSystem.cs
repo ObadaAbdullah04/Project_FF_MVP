@@ -7,7 +7,8 @@ namespace Project.Core
 
     public class LocalSaveSystem : MonoBehaviour, ISaveSystem
     {
-        private const string SaveKey = "OfflineInventorySave";
+        public const string InventorySaveKey = "OfflineInventorySave";
+        public const string ProgressSaveKey = "OfflineProgressSave";
 
         public void Initialize(Action onComplete)
         {
@@ -23,7 +24,7 @@ namespace Project.Core
             }
 
             string json = JsonUtility.ToJson(InventorySnapshot.FromInventory(inventory));
-            PlayerPrefs.SetString(SaveKey, json);
+            PlayerPrefs.SetString(InventorySaveKey, json);
             PlayerPrefs.Save();
 
             onComplete?.Invoke();
@@ -37,9 +38,9 @@ namespace Project.Core
                 return;
             }
 
-            if (PlayerPrefs.HasKey(SaveKey))
+            if (PlayerPrefs.HasKey(InventorySaveKey))
             {
-                string json = PlayerPrefs.GetString(SaveKey);
+                string json = PlayerPrefs.GetString(InventorySaveKey);
                 try
                 {
                     var snapshot = JsonUtility.FromJson<InventorySnapshot>(json);
@@ -48,6 +49,46 @@ namespace Project.Core
                 catch (Exception ex)
                 {
                     Debug.LogError($"LocalSaveSystem: Failed to deserialize inventory. {ex.Message}");
+                }
+            }
+
+            onComplete?.Invoke();
+        }
+
+        public void SaveProgress(ChildProgressData progress, Action onComplete)
+        {
+            if (progress == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            string json = JsonUtility.ToJson(ProgressSnapshot.FromProgress(progress));
+            PlayerPrefs.SetString(ProgressSaveKey, json);
+            PlayerPrefs.Save();
+
+            onComplete?.Invoke();
+        }
+
+        public void LoadProgress(ChildProgressData progress, Action onComplete)
+        {
+            if (progress == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            if (PlayerPrefs.HasKey(ProgressSaveKey))
+            {
+                string json = PlayerPrefs.GetString(ProgressSaveKey);
+                try
+                {
+                    var snapshot = JsonUtility.FromJson<ProgressSnapshot>(json);
+                    snapshot?.ApplyTo(progress);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"LocalSaveSystem: Failed to deserialize progress. {ex.Message}");
                 }
             }
 

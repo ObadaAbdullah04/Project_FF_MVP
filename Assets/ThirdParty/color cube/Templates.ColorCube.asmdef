@@ -1,0 +1,8 @@
+{
+    "name": "Templates.ColorCube",
+    "rootNamespace": "Templates.ColorCube",
+    "references": [
+        "_Project"
+    ],
+    "autoReferenced": true
+}

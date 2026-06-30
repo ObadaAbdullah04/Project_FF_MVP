@@ -9,6 +9,7 @@ namespace Project.Core
         public static GameManager Instance => ServiceLocator.Get<GameManager>();
 
         [SerializeField] private InventoryData _inventoryData;
+        [SerializeField] private ChildProgressData _childProgressData;
         [SerializeField] private MonoBehaviour _saveSystemComponent;
 
         private ISaveSystem _saveSystem;
@@ -35,11 +36,19 @@ namespace Project.Core
                 _inventoryData.ResetData();
             }
 
-            if (_saveSystem != null && _inventoryData != null)
+            if (_childProgressData != null)
+            {
+                _childProgressData.ResetData();
+            }
+
+            if (_saveSystem != null)
             {
                 _saveSystem.Initialize(() =>
                 {
-                    _saveSystem.LoadInventory(_inventoryData, null);
+                    if (_inventoryData != null)
+                        _saveSystem.LoadInventory(_inventoryData, null);
+                    if (_childProgressData != null)
+                        _saveSystem.LoadProgress(_childProgressData, null);
                 });
             }
         }
@@ -60,8 +69,24 @@ namespace Project.Core
         public void SaveGame()
         {
             if (_saveSystem == null) return;
-            if (_inventoryData == null) return;
-            _saveSystem.SaveInventory(_inventoryData, () => { });
+            if (_inventoryData != null)
+                _saveSystem.SaveInventory(_inventoryData, () => { });
+            if (_childProgressData != null)
+                _saveSystem.SaveProgress(_childProgressData, () => { });
+        }
+
+        public void ResetAllData()
+        {
+            if (_inventoryData != null)
+                _inventoryData.ResetData();
+            if (_childProgressData != null)
+                _childProgressData.ResetData();
+
+            PlayerPrefs.DeleteKey(LocalSaveSystem.InventorySaveKey);
+            PlayerPrefs.DeleteKey(LocalSaveSystem.ProgressSaveKey);
+            PlayerPrefs.Save();
+
+            SaveGame();
         }
     }
 }

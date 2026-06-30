@@ -15,6 +15,8 @@ namespace Project.Hub
         [SerializeField] private float _cameraPanDuration = 0.8f;
         [SerializeField] private float _cameraHoldDuration = 1.2f;
         [SerializeField] private float _dragSensitivity = 0.02f;
+        [SerializeField] private float _dragFriction = 5f;
+        [SerializeField] private float _smoothFocusTime = 0.3f;
 
         private Vector3 _initialCameraPosition;
         private Quaternion _initialCameraRotation;
@@ -24,6 +26,13 @@ namespace Project.Hub
 
         private Vector3 _lastMousePosition;
         private bool _isDraggingMouse;
+
+        // Inertia & Focus variables
+        private Vector3 _velocity;
+        private Vector3 _smoothDampVelocity;
+        private bool _isFocusing;
+        private Vector3 _focusTargetPosition;
+        private Vector3 _focusLookTarget;
 
         public bool IsSequenceRunning => _isSequenceRunning;
 
@@ -56,11 +65,46 @@ namespace Project.Hub
             }
         }
 
+        private void LateUpdate()
+        {
+            if (_isSequenceRunning || _hubCamera == null) return;
+
+            if (_isFocusing)
+            {
+                // Smooth Focus Pan
+                _hubCamera.transform.position = Vector3.SmoothDamp(
+                    _hubCamera.transform.position, 
+                    _focusTargetPosition, 
+                    ref _smoothDampVelocity, 
+                    _smoothFocusTime);
+
+                // Smooth LookAt
+                Quaternion targetRot = Quaternion.LookRotation(_focusLookTarget - _hubCamera.transform.position);
+                _hubCamera.transform.rotation = Quaternion.Slerp(_hubCamera.transform.rotation, targetRot, Time.deltaTime * 5f);
+
+                if (Vector3.Distance(_hubCamera.transform.position, _focusTargetPosition) < 0.05f)
+                {
+                    _isFocusing = false;
+                }
+            }
+            else
+            {
+                // Apply Inertia
+                if (!_isDraggingMouse && Input.touchCount == 0 && _velocity.sqrMagnitude > 0.001f)
+                {
+                    _hubCamera.transform.position += _velocity * Time.deltaTime;
+                    _velocity = Vector3.Lerp(_velocity, Vector3.zero, Time.deltaTime * _dragFriction);
+                }
+            }
+        }
+
         public void ResetCamera()
         {
             if (_hubCamera == null) return;
 
             _hubCamera.transform.DOKill();
+            _isFocusing = false;
+            _velocity = Vector3.zero;
 
             if (_hasResetFocus)
             {
@@ -73,6 +117,17 @@ namespace Project.Hub
                 _hubCamera.transform.position = _initialCameraPosition;
                 _hubCamera.transform.rotation = _initialCameraRotation;
             }
+        }
+
+        public void FocusOnTarget(Vector3 targetPosition)
+        {
+            if (_hubCamera == null) return;
+            
+            _hubCamera.transform.DOKill();
+            _isFocusing = true;
+            _focusLookTarget = targetPosition;
+            _focusTargetPosition = targetPosition + Vector3.back * 5f + Vector3.up * 3f;
+            _velocity = Vector3.zero; // Stop inertia
         }
 
         private void HandleCameraDrag()
@@ -94,6 +149,7 @@ namespace Project.Hub
                 {
                     _lastMousePosition = Input.mousePosition;
                     _isDraggingMouse = true;
+                    _isFocusing = false; // Stop focus on manual drag
                 }
                 else if (Input.GetMouseButton(0) && _isDraggingMouse)
                 {
@@ -116,6 +172,8 @@ namespace Project.Hub
 
         private void PanCamera(Vector2 delta)
         {
+            _isFocusing = false; // Override focus
+
             Vector3 right = _hubCamera.transform.right;
             Vector3 forward = _hubCamera.transform.forward;
             right.y = 0f;
@@ -125,6 +183,15 @@ namespace Project.Hub
 
             Vector3 movement = (right * -delta.x + forward * -delta.y);
             _hubCamera.transform.position += movement;
+
+            // Track velocity for inertia
+            _velocity = movement / Time.deltaTime;
+            
+            // Cap max velocity to prevent wild flinging
+            if (_velocity.magnitude > 20f)
+            {
+                _velocity = _velocity.normalized * 20f;
+            }
         }
 
         public void PlayUnlockSequence(Transform targetChunk, Action onComplete)
@@ -136,6 +203,8 @@ namespace Project.Hub
             }
 
             _isSequenceRunning = true;
+            _isFocusing = false;
+            _velocity = Vector3.zero;
             _hubCamera.transform.DOKill();
 
             _hasResetFocus = true;

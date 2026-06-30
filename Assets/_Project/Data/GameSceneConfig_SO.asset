@@ -16,3 +16,6 @@ MonoBehaviour:
   _hubSceneName: 2_HubWorld
   _parentGateSceneName: Parent Gate
   _parentDashboardSceneName: ParentDashboard
+  _roleSelectionSceneName: RoleSelection
+  _ageEntrySceneName: AgeEntry
+  _sessionLockSceneName: SessionLock

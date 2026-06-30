@@ -77,5 +77,43 @@ namespace Project.Core
                 }
             });
         }
+
+        public void SaveProgress(ChildProgressData progress, Action onComplete)
+        {
+            Task.Run(async () =>
+            {
+                string json = JsonUtility.ToJson(ProgressSnapshot.FromProgress(progress));
+
+                await Task.Delay(100);
+
+                if (NetworkDispatcher.Instance != null)
+                {
+                    NetworkDispatcher.Instance.Enqueue(() =>
+                    {
+                        onComplete?.Invoke();
+                    });
+                }
+            });
+        }
+
+        public void LoadProgress(ChildProgressData progress, Action onComplete)
+        {
+            Task.Run(async () =>
+            {
+                await Task.Delay(100);
+
+                string json = JsonUtility.ToJson(ProgressSnapshot.FromProgress(progress));
+
+                if (NetworkDispatcher.Instance != null)
+                {
+                    NetworkDispatcher.Instance.Enqueue(() =>
+                    {
+                        var snapshot = JsonUtility.FromJson<ProgressSnapshot>(json);
+                        snapshot?.ApplyTo(progress);
+                        onComplete?.Invoke();
+                    });
+                }
+            });
+        }
     }
 }
