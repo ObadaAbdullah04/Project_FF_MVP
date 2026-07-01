@@ -10812,7 +10812,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inventoryData: {fileID: 11400000, guid: 6e3cb135528ac2a4b8eccea3c41300df, type: 2}
   _childProgressData: {fileID: 11400000, guid: 014e9f6d1092911419b1205b9625d10a, type: 2}
-  _saveSystemComponent: {fileID: 1971682619}
+  _saveSystemComponent: {fileID: 1971682616}
 --- !u!4 &1971682618
 Transform:
   m_ObjectHideFlags: 0

@@ -101,8 +101,8 @@ flowchart LR
 | Phase 2 — Hub World (Isometric Grid, Buildings, Economy)| ✅ Complete |
 | Phase 3 — Mini-Games (Integration & Refactoring) | ✅ Complete |
 | Phase 4 — Data, UI & Infrastructure | ✅ Complete |
-| **Phase 5 — Firebase & Cloud Persistence** | **🚧 Next / Ready** |
-| Phase 6 — UI/UX Polish & Character Integration | ⏳ Future |
+| Phase 5 — Firebase & Cloud Persistence | ✅ Complete |
+| **Phase 6 — UI/UX Polish & Character Integration** | **🚧 Next / Ready** |
 | Phase 7 — QA, Launch & Build | ⏳ Future |
 
 ---
@@ -119,22 +119,19 @@ flowchart LR
 
 ---
 
-### 🚧 Phase 5: Firebase & Cloud Persistence (Standalone)
-**Focus:** Replace the mock save system with real Firebase Auth and Firestore for true cross-session persistence. *Must be completed before final polish to ensure data stability.*
+### ✅ Phase 5: Firebase & Cloud Persistence (Completed)
+**Focus:** Replace the mock save system with real Firebase Auth and Firestore for true cross-session persistence. 
 
-- **Firebase Auth:** Implement anonymous sign-in linked to device ID.
+- **Firebase Auth:** Implemented anonymous sign-in linked to device ID with seamless editor session restoration.
 - **Firestore Database:** 
-  - Read/Write `InventorySnapshot` (coins, chunks).
-  - Read/Write `ProgressSnapshot` (session history, stats).
+  - Read/Write `InventorySnapshot` (coins, chunks) via safe `Dictionary` parsing.
+  - Read/Write `ProgressSnapshot` (session history, stats) via compressed JSON strings.
 - **Offline Fallback:** 
-  - Cloud-first save architecture.
-  - If offline, fallback seamlessly to `LocalSaveSystem`.
-  - On next online boot, sync local changes up to the cloud.
-- **UI Feedback:** Add subtle, non-intrusive cloud-sync indicators in the Parent Dashboard.
+  - Explicitly configured and verified Firestore's native 100MB offline caching system.
 
 ---
 
-### ⏳ Phase 6: UI/UX Polish & Character Integration (Expanded)
+### 🚧 Phase 6: UI/UX Polish & Character Integration (Expanded)
 **Focus:** Transform the functional MVP into a joyful, toddler-friendly experience with high retention, visual juice, and character presence.
 
 **1. Character Companion & The Hook**
@@ -171,11 +168,11 @@ flowchart LR
 
 | Priority | Deliverable | Status |
 |----------|-------------|--------|
-| **P0** | **Firebase Auth & Firestore Integration (Phase 5)** | Pending |
-| **P0** | **Offline fallback & local sync (Phase 5)** | Pending |
-| **P1** | Character companion model & 3D placement (Phase 6) | Pending |
-| **P1** | Voice lines & audio feedback integration (Phase 6) | Pending |
-| **P1** | Visual polish (particles, UI DOTween juice) (Phase 6) | Pending |
-| **P1** | Camera movement & focus enhancements (Phase 6) | Pending |
+| **P0** | **Firebase Auth & Firestore Integration (Phase 5)** | ✅ Complete |
+| **P0** | **Offline fallback & local sync (Phase 5)** | ✅ Complete |
+| **P1** | **Character companion model & 3D placement (Phase 6)** | **Pending** |
+| **P1** | **Voice lines & audio feedback integration (Phase 6)** | **Pending** |
+| **P1** | **Visual polish (particles, UI DOTween juice) (Phase 6)** | **Pending** |
+| **P1** | **Camera movement & focus enhancements (Phase 6)** | **Pending** |
 | **P2** | Additional mini-games & expansions | Future Scope |
 | **P2** | App Store / Play Store prep (Phase 7) | Future Scope |

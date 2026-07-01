@@ -51,10 +51,10 @@ Everything in the "Remove" section of `PLAN.md` must be confirmed unreferenced f
 
 - Do not add gameplay complexity before the core loop works end-to-end.
 - Do not build multiple mini-games until the data pipeline is solid.
-- Do not invest in animations, audio, or polish until the playable loop is solid (Phase 5).
+- Do not invest in animations, audio, or polish until the playable loop is solid and Cloud integrations are stable (Phase 6).
 - Do not ship without a parent gate — it is a hard requirement.
 - Do not add text-dependent UI. Assume the child cannot read.
-- Do not start Phase 5 (character, juice, UX) until Phase 4 is tested and stable.
+- Do not start Phase 6 (character, juice, UX) until Phase 5 is tested and stable.
 - Do not edit a file across multiple steps (single-writer rule).
 - Do not delete code before its replacement is verified.
 
@@ -62,4 +62,4 @@ Everything in the "Remove" section of `PLAN.md` must be confirmed unreferenced f
 - **NO ADDITIVE UI SCENES:** Do NOT use SceneManager.LoadSceneAdditively for menus. All UI panels (Parent Gate, Dashboard, Session Lock, Age Entry) exist in a single Canvas inside the persistent 1_Core scene.
 - **UI State Machine:** Toggle menus exclusively using Project.UI.MenuManager.Instance.ShowPanelName().
 - **Environment Transitions:** Hub and MiniGames are strictly transitioned using SceneLoader.Instance.TransitionToScene(). This guarantees the previous environment is unloaded, preventing the "Additive Stack of Death" and camera/audio clashes.
-- **Brittle Strings:** Do NOT use UIHelper.FindChildButton("StringName"). Use direct [SerializeField] private Button assignments.
+- **Brittle Strings:** Do NOT use UIHelper.FindChildButton("StringName"). Use direct `[SerializeField] private Button` assignments.

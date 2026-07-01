@@ -72,6 +72,9 @@ namespace Project.Editor
             PlayerPrefs.DeleteKey(DeviceRoleManager.TimeLimitKey);
             PlayerPrefs.DeleteKey(SessionTimer.TodayDateKey);
             PlayerPrefs.DeleteKey(SessionTimer.TodayDurationKey);
+            
+            // Flag for FirebaseManager to wipe cloud data on next boot
+            PlayerPrefs.SetInt("PendingCloudWipe", 1);
             PlayerPrefs.Save();
 
             AssetDatabase.SaveAssets();
